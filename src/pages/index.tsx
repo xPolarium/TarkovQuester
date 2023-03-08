@@ -5,11 +5,21 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 
-import QuestNode from "~/components/QuestNode";
+import ReactFlow, { useNodesState, useEdgesState } from "reactflow";
 
-const Home: NextPage = () => {
-  const quests = [
-    {
+import QuestNode from "../components/QuestNode";
+
+import "reactflow/dist/base.css";
+
+const nodeTypes = {
+  quest: QuestNode,
+};
+
+const initNodes = [
+  {
+    id: "1",
+    type: "quest",
+    data: {
       name: "Debut",
       wiki: "https://escapefromtarkov.fandom.com/wiki/Debut",
       type: "Elimination",
@@ -18,7 +28,12 @@ const Home: NextPage = () => {
         "Obtain and hand over 2 MP-133 12ga shotguns",
       ],
     },
-    {
+    position: { x: 80, y: 450 },
+  },
+  {
+    id: "2",
+    type: "quest",
+    data: {
       name: "Search Mission",
       wiki: "https://escapefromtarkov.fandom.com/wiki/Search_Mission",
       type: "Completion",
@@ -28,7 +43,22 @@ const Home: NextPage = () => {
         "Survive and extract from the location",
       ],
     },
-  ];
+    position: { x: 570, y: 250 },
+  },
+];
+
+const initEdges = [
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    type: "smoothstep",
+  },
+];
+
+const Home: NextPage = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
 
   return (
     <>
@@ -42,8 +72,13 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="relative flex h-screen">
-        <QuestNode posX={200} posY={240} quest={quests[0]} />
-        <QuestNode posX={700} posY={90} quest={quests[1]} />
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          nodesConnectable={false}
+          edgesFocusable={false}
+        ></ReactFlow>
       </main>
     </>
   );
